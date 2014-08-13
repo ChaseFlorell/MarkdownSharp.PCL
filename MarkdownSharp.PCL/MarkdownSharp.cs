@@ -10,26 +10,26 @@ namespace MarkdownSharp.PCL
     /// Markdown allows you to write using an easy-to-read, easy-to-write plain text format, 
     /// then convert it to structurally valid XHTML (or HTML).
     /// </summary>
-    public class Markdown
+    public class MarkdownSharp
     {
         private const string _version = "1.13";
 
         /// <summary>
         /// maximum nested depth of [] and () supported by the transform; implementation detail
         /// </summary>
-        private const int NestDepth = 6;
+        private const int _nestDepth = 6;
 
         /// <summary>
         /// Tabs are automatically converted to spaces as part of the transform  
         /// this constant determines how "wide" those tabs become in spaces  
         /// </summary>
-        private const int TabWidth = 4;
+        private const int _tabWidth = 4;
 
-        private const string MarkerUl = @"[*+-]";
-        private const string MarkerOl = @"\d+[.]";
-        private const string CharInsideUrl = @"[-A-Z0-9+&@#/%?=~_|\[\]\(\)!:,\.;" + "\x1a]";
-        private const string CharEndingUrl = "[-A-Z0-9+&@#/%=~_|\\[\\])]";
-        private const string AutoLinkPreventionMarker = "\x1AP"; // temporarily replaces "://" where auto-linking shouldn't happen;
+        private const string _markerUl = @"[*+-]";
+        private const string _markerOl = @"\d+[.]";
+        private const string _charInsideUrl = @"[-A-Z0-9+&@#/%?=~_|\[\]\(\)!:,\.;" + "\x1a]";
+        private const string _charEndingUrl = "[-A-Z0-9+&@#/%=~_|\\[\\])]";
+        private const string _autoLinkPreventionMarker = "\x1AP"; // temporarily replaces "://" where auto-linking shouldn't happen;
 
         private static readonly Dictionary<string, string> EscapeTable;
         private static readonly Dictionary<string, string> InvertedEscapeTable;
@@ -57,14 +57,14 @@ namespace MarkdownSharp.PCL
                             ["")]
                             [ ]*
                         )?                      # title is optional
-                        (?:\n+|\Z)", TabWidth - 1), RegexOptions.Multiline | RegexOptions.IgnorePatternWhitespace);
+                        (?:\n+|\Z)", _tabWidth - 1), RegexOptions.Multiline | RegexOptions.IgnorePatternWhitespace);
         private static readonly Regex BlocksHtml = new Regex(GetBlockPattern(), RegexOptions.Multiline | RegexOptions.IgnorePatternWhitespace);
 
         private static readonly Regex HtmlTokens = new Regex(@"
             (<!--(?:|(?:[^>-]|-[^>])(?:[^-]|-[^-])*)-->)|        # match <!-- foo -->
             (<\?.*?\?>)|                 # match <?foo?> " +
                                                              RepeatString(@" 
-            (<[A-Za-z\/!$](?:[^<>]|", NestDepth) + RepeatString(@")*>)", NestDepth) +
+            (<[A-Za-z\/!$](?:[^<>]|", _nestDepth) + RepeatString(@")*>)", _nestDepth) +
                                                              " # match <tag> and </tag>",
             RegexOptions.Multiline | RegexOptions.Singleline | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace);
 
@@ -188,7 +188,7 @@ namespace MarkdownSharp.PCL
                     {0}[ ]+
                   )
               )
-            )", string.Format("(?:{0}|{1})", MarkerUl, MarkerOl), TabWidth - 1);
+            )", string.Format("(?:{0}|{1})", _markerUl, _markerOl), _tabWidth - 1);
 
         private static readonly Regex ListNested = new Regex(@"^" + WholeList,
             RegexOptions.Multiline | RegexOptions.IgnorePatternWhitespace);
@@ -205,7 +205,7 @@ namespace MarkdownSharp.PCL
                     )+
                     )
                     ((?=^[ ]{{0,{0}}}[^ \t\n])|\Z) # Lookahead for non-space at line-start, or end of doc",
-            TabWidth), RegexOptions.Multiline | RegexOptions.IgnorePatternWhitespace);
+            _tabWidth), RegexOptions.Multiline | RegexOptions.IgnorePatternWhitespace);
 
         private static readonly Regex CodeSpan = new Regex(@"
                     (?<![\\`])   # Character before opening ` can't be a backslash or backtick
@@ -238,11 +238,11 @@ namespace MarkdownSharp.PCL
                 )+
             )", RegexOptions.IgnorePatternWhitespace | RegexOptions.Multiline);
 
-        private static readonly Regex AutolinkBare = new Regex(@"(<|="")?\b(https?|ftp)(://" + CharInsideUrl + "*" + CharEndingUrl + ")(?=$|\\W)",
+        private static readonly Regex AutolinkBare = new Regex(@"(<|="")?\b(https?|ftp)(://" + _charInsideUrl + "*" + _charEndingUrl + ")(?=$|\\W)",
             RegexOptions.IgnoreCase);
 
-        private static readonly Regex EndCharRegex = new Regex(CharEndingUrl, RegexOptions.IgnoreCase);
-        private static readonly Regex OutDent = new Regex(@"^[ ]{1," + TabWidth + @"}", RegexOptions.Multiline);
+        private static readonly Regex EndCharRegex = new Regex(_charEndingUrl, RegexOptions.IgnoreCase);
+        private static readonly Regex OutDent = new Regex(@"^[ ]{1," + _tabWidth + @"}", RegexOptions.Multiline);
 
         #region Constructors and Options
 
@@ -256,7 +256,7 @@ namespace MarkdownSharp.PCL
         /// <summary>
         /// Create a new Markdown instance using default options
         /// </summary>
-        public Markdown()
+        public MarkdownSharp()
         {
             _autoHyperlink = true;
             _autoNewlines = false;
@@ -269,7 +269,7 @@ namespace MarkdownSharp.PCL
         /// <summary>
         /// Create a new Markdown instance and set the options from the MarkdownOptions object.
         /// </summary>
-        public Markdown(MarkdownOptions options)
+        public MarkdownSharp(MarkdownOptions options)
         {
             _autoHyperlink = options.AutoHyperlink;
             _autoNewlines = options.AutoNewlines;
@@ -350,7 +350,7 @@ namespace MarkdownSharp.PCL
         /// <summary>
         /// In the static constuctor we'll initialize what stays the same across all transforms.
         /// </summary>
-        static Markdown()
+        static MarkdownSharp()
         {
             // Table of hash values for escaped characters:
             EscapeTable = new Dictionary<string, string>();
@@ -451,7 +451,7 @@ namespace MarkdownSharp.PCL
             // delimiters in inline links like [this](<url>).
             text = DoAutoLinks(text);
 
-            text = text.Replace(AutoLinkPreventionMarker, "://");
+            text = text.Replace(_autoLinkPreventionMarker, "://");
 
             text = EncodeAmpsAndAngles(text);
             text = DoItalicsAndBold(text);
@@ -537,10 +537,10 @@ namespace MarkdownSharp.PCL
                        [^\[\]]+      # Anything other than brackets
                      |
                        \[
-                           ", NestDepth) + RepeatString(
+                           ", _nestDepth) + RepeatString(
                 @" \]
                     )*"
-                , NestDepth));
+                , _nestDepth));
         }
 
         /// <summary>
@@ -556,10 +556,10 @@ namespace MarkdownSharp.PCL
                        [^()\s]+      # Anything other than parens or whitespace
                      |
                        \(
-                           ", NestDepth) + RepeatString(
+                           ", _nestDepth) + RepeatString(
                 @" \)
                     )*"
-                , NestDepth));
+                , _nestDepth));
         }
 
         /// <summary>
@@ -633,7 +633,7 @@ namespace MarkdownSharp.PCL
                   (?>
                       />
                   |
-                      >", NestDepth) + // end of opening tag
+                      >", _nestDepth) + // end of opening tag
                           ".*?" + // last level nested tag content
                           RepeatString(@"
                       </\2\s*>﻿          # closing nested tag
@@ -641,7 +641,7 @@ namespace MarkdownSharp.PCL
                   |﻿  ﻿  ﻿  ﻿  
                   <(?!/\2\s*>           # other tags with a different name
                   )
-                )*", NestDepth);
+                )*", _nestDepth);
 
             var content2 = content.Replace(@"\2", @"\3");
 
@@ -718,7 +718,7 @@ namespace MarkdownSharp.PCL
                   )
             )";
 
-            pattern = pattern.Replace("$less_than_tab", (TabWidth - 1).ToString());
+            pattern = pattern.Replace("$less_than_tab", (_tabWidth - 1).ToString());
             pattern = pattern.Replace("$block_tags_b_re", blockTagsB);
             pattern = pattern.Replace("$block_tags_a_re", blockTagsA);
             pattern = pattern.Replace("$attr", attr);
@@ -808,7 +808,7 @@ namespace MarkdownSharp.PCL
 
         private static string SaveFromAutoLinking(string s)
         {
-            return s.Replace("://", AutoLinkPreventionMarker);
+            return s.Replace("://", _autoLinkPreventionMarker);
         }
 
         private string AnchorRefEvaluator(Match match)
@@ -1052,9 +1052,9 @@ namespace MarkdownSharp.PCL
             return match =>
             {
                 var list = match.Groups[1].Value;
-                var listType = Regex.IsMatch(match.Groups[3].Value, MarkerUl) ? "ul" : "ol";
+                var listType = Regex.IsMatch(match.Groups[3].Value, _markerUl) ? "ul" : "ol";
 
-                var result = ProcessListItems(list, listType == "ul" ? MarkerUl : MarkerOl, isInsideParagraphlessListItem);
+                var result = ProcessListItems(list, listType == "ul" ? _markerUl : _markerOl, isInsideParagraphlessListItem);
 
                 result = string.Format("<{0}>\n{1}</{0}>\n", listType, result);
                 return result;
@@ -1602,7 +1602,7 @@ namespace MarkdownSharp.PCL
                         }
                         break;
                     case '\t':
-                        var width = (TabWidth - line.Length%TabWidth);
+                        var width = (_tabWidth - line.Length%_tabWidth);
                         for (var k = 0; k < width; k++)
                             line.Append(' ');
                         break;

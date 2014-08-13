@@ -7,12 +7,12 @@ namespace MarkdownSharp.PCL.Tests.Unit
     [TestFixture]
     public class MarkdownSharpTests
     {
-        private Markdown _markdown;
+        private MarkdownSharp _markdownSharp;
 
         [SetUp]
         public void Setup()
         {
-            _markdown = new Markdown();
+            _markdownSharp = new MarkdownSharp();
         }
 
         [Test]
@@ -23,7 +23,7 @@ namespace MarkdownSharp.PCL.Tests.Unit
             var expected = @"<p><h1>hello world</h1></p>" + Environment.NewLine;
 
             // execute
-            var actual = _markdown.Transform(original);
+            var actual = _markdownSharp.Transform(original);
 
             // assert
             Assert.AreEqual(expected, actual);
@@ -37,7 +37,7 @@ namespace MarkdownSharp.PCL.Tests.Unit
             var expected = @"<p><strong>hello world</strong></p>" + Environment.NewLine;
 
             // execute
-            var actual = _markdown.Transform(original);
+            var actual = _markdownSharp.Transform(original);
 
             // assert
             Assert.AreEqual(expected, actual);
@@ -51,7 +51,7 @@ namespace MarkdownSharp.PCL.Tests.Unit
             var expected = @"<p><em>hello world</em></p>" + Environment.NewLine;
 
             // execute
-            var actual = _markdown.Transform(original);
+            var actual = _markdownSharp.Transform(original);
 
             // assert
             Assert.AreEqual(expected, actual);
@@ -69,7 +69,7 @@ namespace MarkdownSharp.PCL.Tests.Unit
             var expected = @"<p><a href=""m&#97;&#x69;&#108;&#x74;&#x6f;:&#97;ddr&#x65;&#115;&#x73;&#64;&#100;&#111;&#109;&#x61;&#105;&#110;&#46;&#x66;o&#x6f;"">&#97;ddr&#x65;&#115;&#x73;&#64;&#100;&#111;&#109;&#x61;&#105;&#110;&#46;&#x66;o&#x6f;</a></p>" + Environment.NewLine;
 
             // execute
-            var actual = _markdown.Transform(original);
+            var actual = _markdownSharp.Transform(original);
 
             // assert
             Assert.That(actual.Length, new GreaterThanConstraint(200));
@@ -83,7 +83,7 @@ namespace MarkdownSharp.PCL.Tests.Unit
             var expected = @"<p><a href=""http://example.com"">http://example.com</a></p>" + Environment.NewLine;
 
             // execute
-            var actual = _markdown.Transform(original);
+            var actual = _markdownSharp.Transform(original);
 
             // assert
             Assert.AreEqual(expected, actual);
