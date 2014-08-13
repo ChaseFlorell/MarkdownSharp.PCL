@@ -73,6 +73,9 @@ namespace MarkdownSharp.PCL.Tests.Unit
 
             // assert
             Assert.That(actual.Length, new GreaterThanConstraint(200));
+            Assert.That(actual, new StartsWithConstraint("<p><a href="));
+            Assert.That(actual, new EndsWithConstraint("</a></p>" + Environment.NewLine));
+            Assert.That(actual, new ContainsConstraint(":")); // colons will never be encoded.
         }
 
         [Test]
